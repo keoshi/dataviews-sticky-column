@@ -30,22 +30,7 @@ body {
   font-size: var(--wpds-typography-font-size-2xl);
   line-height: var(--wpds-typography-line-height-2xl);
   font-weight: var(--wpds-typography-font-weight-emphasis);
-  margin: 0 0 var(--wpds-dimension-gap-sm);
-}
-
-.page-header p,
-.page-note p {
-  margin: 0 0 var(--wpds-dimension-gap-sm);
-  max-inline-size: 68ch;
-}
-
-.page-header p:last-child,
-.page-note p:last-child {
-  margin-bottom: 0;
-}
-
-.muted {
-  color: var(--wpds-color-foreground-content-neutral-weak);
+  margin: 0;
 }
 
 /* A card, on the same terms DataViews' own surface uses. */
@@ -100,15 +85,4 @@ body {
    it does not need much. */
 .post-title {
   font-weight: var(--wpds-typography-font-weight-emphasis);
-}
-
-.page-footer {
-  border-top: 1px solid var(--wpds-color-stroke-surface-neutral-weak);
-  padding-top: var(--wpds-dimension-padding-xl);
-  font-size: var(--wpds-typography-font-size-sm);
-  color: var(--wpds-color-foreground-content-neutral-weak);
-}
-
-.page-footer a {
-  color: var(--wpds-color-foreground-interactive-brand);
 }

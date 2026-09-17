@@ -58,4 +58,4 @@ Two cases the demo answers rather than describes:
   a control rather than content.
 
 The row actions do nothing and the posts are invented. Built on
-`@wordpress/dataviews` 18.1.0.
+`@wordpress/dataviews` 19.0.0.

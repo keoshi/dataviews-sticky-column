@@ -77,6 +77,12 @@ const BULK_ACTIONS = ACTIONS.map((action) =>
  * also why the query measures the table and not the window: a table is *wider*
  * in a 780px window than in an 800px one, and a media query would unstick the
  * wider of the two.
+ *
+ * One thing these frames cannot reproduce. Below a 782px *viewport* DataViews
+ * hides the primary row actions and leaves only the ellipsis menu — that is
+ * `useViewportMatch( 'medium', '<' )`, which reads the window rather than the
+ * table. So the 390px frame here still shows a full actions column, where a
+ * real phone would not. Narrow the browser to see it.
  */
 const WIDTHS = [
   { value: 'full', label: 'Full width', width: '100%' },
@@ -111,22 +117,12 @@ export default function App() {
     <main className="page">
       <header className="page-header">
         <h1>Sticky first column in DataViews</h1>
-        <p>
-          DataViews already pins one column: the actions column holds the right edge while the rest
-          of the table scrolls under it. This demo pins the first column to the left on the same
-          terms — as something a table can ask for, not something every table gets.
-        </p>
-        <p className="muted">
-          Scroll the table sideways with the switch off, then on. Ten columns after the title is an
-          ordinary posts list on a site with a couple of plugins installed.
-        </p>
       </header>
 
       <div className="panel controls">
         <ToggleControl
           __nextHasNoMarginBottom
           label="Sticky first column"
-          help="The proposal. Off is how DataViews behaves today."
           checked={sticky}
           onChange={setSticky}
         />
@@ -135,14 +131,12 @@ export default function App() {
           selected={mode}
           options={SELECTION}
           onChange={setMode}
-          help="Checkboxes take the first position, so the title moves to second and the pair has to travel together."
         />
         <RadioControl
           label="Table width"
           selected={width}
           options={WIDTHS.map(({ value, label }) => ({ value, label }))}
           onChange={setWidth}
-          help="Below 480px the first column stops being sticky and the table scrolls whole."
         />
       </div>
 
@@ -155,14 +149,6 @@ export default function App() {
           {...(bulk ? { selection, onChangeSelection: setSelection } : {})}
         />
       </div>
-
-      <footer className="page-footer">
-        <p>
-          A demo, not a patch. Row actions do nothing, and the posts are invented. Built on
-          @wordpress/dataviews 18.1.0 — the pinning stands in for two classes a Core change would
-          put on the cell itself.
-        </p>
-      </footer>
     </main>
   );
 }
