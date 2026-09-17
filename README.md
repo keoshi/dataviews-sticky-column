@@ -25,7 +25,8 @@ npm run dev
 
 | File | What it is |
 |---|---|
-| `src/App.jsx` | The page: the posts table, and the switches for sticky, selection and width |
+| `src/App.jsx` | The page and its switches, plus the table-only page each frame loads |
+| `src/Frame.jsx` | The width frames — an iframe each, so a stated width is a real viewport |
 | `src/PostsTable.jsx` | The table on DataViews, and the hook standing in for the Core change |
 | `src/styles/sticky-column.css` | The pinning — the actions-column block mirrored to the other edge |
 | `src/data/posts.js` | Fourteen invented posts and ten columns after the title |
@@ -56,6 +57,13 @@ Two cases the demo answers rather than describes:
   media query — the first column stops being sticky and the table scrolls whole.
   The actions column keeps its edge at every width, because what it reserves is
   a control rather than content.
+
+Each width frame is an iframe rather than a box, so the frame is a real viewport
+to everything inside it. Without that, the parts of DataViews that ask the
+*window* how much room there is — `ItemActions` dropping its primary actions
+below 782px, the stylesheet sizing checkboxes at 24px below 600px — would answer
+with the width of whatever browser the demo happens to be open in, and a 390px
+frame would show a table no 390px phone would ever show.
 
 The row actions do nothing and the posts are invented. Built on
 `@wordpress/dataviews` 19.0.0.

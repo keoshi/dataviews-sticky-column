@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RadioControl, ToggleControl } from '@wordpress/components';
 import { pencil, seen, trash } from '@wordpress/icons';
+import Frame from './Frame.jsx';
 import PostsTable from './PostsTable.jsx';
 import { AUTHORS, CATEGORIES, STATUSES, rows } from './data/posts.js';
 
@@ -69,20 +70,14 @@ const BULK_ACTIONS = ACTIONS.map((action) =>
 /**
  * Four amounts of room, as a frame rather than a browser you have to resize.
  *
- * The behaviour is written as a container query, so a table in a 390px box
- * behaves the way it would on a 390px phone — same component, same stylesheet,
- * different amount of room.
+ * Each frame is its own viewport — see `Frame.jsx` — so the 390px one is a
+ * 390px phone to everything inside it, including the parts of DataViews that
+ * ask the window rather than the table. Nothing here is simulated but the room.
  *
  * 782px is wp-admin's own breakpoint, where the admin menu collapses. Which is
- * also why the query measures the table and not the window: a table is *wider*
- * in a 780px window than in an 800px one, and a media query would unstick the
- * wider of the two.
- *
- * One thing these frames cannot reproduce. Below a 782px *viewport* DataViews
- * hides the primary row actions and leaves only the ellipsis menu — that is
- * `useViewportMatch( 'medium', '<' )`, which reads the window rather than the
- * table. So the 390px frame here still shows a full actions column, where a
- * real phone would not. Narrow the browser to see it.
+ * also why the pinning measures the table and not the window: a table is
+ * *wider* in a 780px window than in an 800px one, and a media query would
+ * unstick the wider of the two.
  */
 const WIDTHS = [
   { value: 'full', label: 'Full width', width: '100%' },
@@ -104,14 +99,70 @@ const SELECTION = [
 
 const DATA = rows();
 
+const PARAMS = new URLSearchParams(window.location.search);
+const ORIGIN = window.location.origin;
+
+/**
+ * Two pages in one document: the demo, and the table on its own.
+ *
+ * The table page is what each frame loads. It is the same component with the
+ * same data — the only difference is that it has a window of its own, which is
+ * the whole point of loading it that way.
+ */
 export default function App() {
+  return PARAMS.get('embed') ? <EmbeddedTable /> : <Demo />;
+}
+
+/** The table alone, driven by its parent through `postMessage`. */
+function EmbeddedTable() {
+  const [sticky, setSticky] = useState(PARAMS.get('sticky') !== '0');
+  const [mode, setMode] = useState(PARAMS.get('mode') ?? 'actions');
+  const [selection, setSelection] = useState([]);
+
+  useEffect(() => {
+    const onMessage = (event) => {
+      if (event.origin !== ORIGIN || event.data?.type !== 'sticky-demo:settings') return;
+      setSticky(event.data.sticky);
+      setMode(event.data.mode);
+    };
+    window.addEventListener('message', onMessage);
+    window.parent.postMessage({ type: 'sticky-demo:ready' }, ORIGIN);
+    return () => window.removeEventListener('message', onMessage);
+  }, []);
+
+  // The frame is sized to this document, so the page holding it never puts a
+  // scrollbar inside a scrollbar.
+  useEffect(() => {
+    const report = () =>
+      window.parent.postMessage(
+        { type: 'sticky-demo:height', height: document.documentElement.scrollHeight },
+        ORIGIN
+      );
+    const observer = new ResizeObserver(report);
+    observer.observe(document.body);
+    report();
+    return () => observer.disconnect();
+  }, []);
+
+  const bulk = mode === 'bulk';
+
+  return (
+    <PostsTable
+      rows={DATA}
+      columns={COLUMNS}
+      sticky={sticky}
+      actions={mode === 'none' ? undefined : bulk ? BULK_ACTIONS : ACTIONS}
+      {...(bulk ? { selection, onChangeSelection: setSelection } : {})}
+    />
+  );
+}
+
+function Demo() {
   const [sticky, setSticky] = useState(true);
   const [width, setWidth] = useState('782');
   const [mode, setMode] = useState('actions');
-  const [selection, setSelection] = useState([]);
 
   const frame = WIDTHS.find((option) => option.value === width) ?? WIDTHS[0];
-  const bulk = mode === 'bulk';
 
   return (
     <main className="page">
@@ -140,15 +191,7 @@ export default function App() {
         />
       </div>
 
-      <div className="frame" style={{ inlineSize: frame.width }}>
-        <PostsTable
-          rows={DATA}
-          columns={COLUMNS}
-          sticky={sticky}
-          actions={mode === 'none' ? undefined : bulk ? BULK_ACTIONS : ACTIONS}
-          {...(bulk ? { selection, onChangeSelection: setSelection } : {})}
-        />
-      </div>
+      <Frame title="Posts table" width={frame.width} sticky={sticky} mode={mode} />
     </main>
   );
 }

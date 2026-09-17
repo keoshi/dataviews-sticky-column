@@ -60,15 +60,13 @@ body {
 }
 
 /*
- * The table in a box of a stated width, so the behaviour at four widths can be
- * seen without resizing a window.
- *
- * The frame is what the container query measures, which is the whole point: the
- * table inside a 390px frame behaves the way it would on a 390px phone, from
- * the same stylesheet, with nothing simulated but the room.
+ * The frame is an iframe, so a stated width is a real viewport rather than a
+ * box — see `Frame.jsx`. Borderless, because the card inside brings its own.
  */
 .frame {
+  display: block;
   max-inline-size: 100%;
+  border: 0;
   transition: inline-size var(--wpds-motion-duration-medium, 160ms) var(--wpds-motion-easing-ease-out, ease-out);
 }
 
