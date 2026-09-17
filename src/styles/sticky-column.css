@@ -1,0 +1,124 @@
+/*
+ * --- Making the first column sticky ------------------------------------------
+ *
+ * The mirror of DataViews' own sticky actions column, proposed for the primary
+ * one. See `useStickyColumn` in `PostsTable.jsx` for why, and for the shape the
+ * patch would take — these selectors stand in for the two classes it would put
+ * on the cell:
+ *
+ *   the primary cell    -> .dataviews-view-table__primary-column--sticky
+ *   .is-stuck + that    -> .dataviews-view-table__primary-column--stuck
+ *
+ * Everything inside is the existing actions-column block from DataViews' own
+ * stylesheet with `right` swapped for `left` and the divider moved to the other
+ * edge.
+ *
+ * **Which cell is the primary one depends on bulk actions.** Without them it is
+ * the first cell in the row. With them the checkbox column takes that position
+ * and the primary field moves to second — so the pair is pinned together, the
+ * checkboxes at the edge and the title starting where they end. Pinning the
+ * checkboxes alone would be worse than pinning nothing: a column of empty boxes
+ * held against the edge while the titles they belong to scroll away underneath.
+ * The offset is `--sticky-lead`, measured from the checkbox column itself,
+ * because that width is DataViews' own and moves with density.
+ *
+ * A `groupBy` header cell is also a first child without being the primary
+ * column, and is excluded: it spans the table, so pinning it would put a
+ * divider down the middle of a full-width row.
+ */
+.posts-table.has-sticky-column {
+  container-type: inline-size;
+}
+
+/*
+ * Wide enough to be worth it, and asked that way round on purpose.
+ *
+ * On a phone the first column loses the battle. Reserving it costs room a
+ * narrow table does not have to give: a title column runs 166px and up, so at
+ * 390px the reservation holds over two fifths of the table and leaves less than
+ * one column to read it against — which is not a comparison, it is a label with
+ * a value beside it, and a reader is better served scrolling a table they can
+ * see all of.
+ *
+ * The actions column keeps its edge at every width, because what it reserves is
+ * a control rather than a column of content: it costs the same room whatever
+ * the table is showing, and giving it up means giving up the way to act on the
+ * row in front of you.
+ *
+ * A `min-width` container query rather than a `max-width` override, so there is
+ * one rule saying when the column is sticky instead of one saying it is and a
+ * second taking it back.
+ *
+ * And it is the table's own width, not the viewport's. wp-admin's menu
+ * collapses at 782px, so a table is *wider* in a 780px window than in an 800px
+ * one, and a media query would unstick the wider of the two.
+ */
+@container (min-width: 480px) {
+  /* The checkbox column, when there is one: the leading half of the pair. */
+  .posts-table.has-sticky-column .dataviews-view-table :is(td, th).dataviews-view-table__checkbox-column {
+    position: sticky;
+    left: 0;
+    background-color: var(
+      --wp-dataviews-color-background,
+      var(--wpds-color-background-surface-neutral-strong, #fff)
+    );
+  }
+
+  /* The primary column — second when checkboxes are on, first when they are
+     not, and offset by whatever the checkboxes took. */
+  .posts-table.has-sticky-column .dataviews-view-table :is(td, th).dataviews-view-table__checkbox-column + :is(td, th),
+  .posts-table.has-sticky-column .dataviews-view-table :is(td, th):first-child:not(.dataviews-view-table__checkbox-column, .dataviews-view-table__group-header-cell) {
+    position: sticky;
+    left: var(--sticky-lead, 0px);
+    /* A sticky cell slides over its neighbours, so it needs a ground of its
+       own — `background-color: inherit` on the row resolves to the table's,
+       which is transparent once the cell has left the flow. The same variable
+       chain DataViews uses for the actions column, so a table on a tinted
+       surface sticks to that surface rather than to white. */
+    background-color: var(
+      --wp-dataviews-color-background,
+      var(--wpds-color-background-surface-neutral-strong, #fff)
+    );
+  }
+
+  /* Selected rows keep their tint under the sticky cells, or the columns that
+     say which row you picked are the columns that stop looking picked. */
+  .posts-table.has-sticky-column .dataviews-view-table tr.is-selected :is(td, th).dataviews-view-table__checkbox-column,
+  .posts-table.has-sticky-column .dataviews-view-table tr.is-selected :is(td, th).dataviews-view-table__checkbox-column + :is(td, th),
+  .posts-table.has-sticky-column .dataviews-view-table tr.is-selected :is(td, th):first-child:not(.dataviews-view-table__checkbox-column, .dataviews-view-table__group-header-cell) {
+    background-color: var(
+      --wpds-color-background-interactive-brand-weak-active,
+      color-mix(in oklch, var(--wp-admin-theme-color, #3858e9) 12%, white)
+    );
+  }
+
+  /*
+   * The divider, only while something is underneath it.
+   *
+   * At rest the table is not scrolled and the first column is simply the first
+   * column; a rule down its edge then reads as a table with a header column,
+   * which is a different claim about the data. It appears when the cell starts
+   * covering something and goes when it stops — the same rule the actions
+   * column follows at the other edge, and the reason `--stuck` is a separate
+   * class from `--sticky`.
+   *
+   * It goes on the trailing cell of the pair, which is the one with something
+   * scrolling under it. On the checkbox column it would draw a line between the
+   * boxes and the titles they belong to.
+   *
+   * A `::after` rather than a border, because `border-collapse: collapse` drops
+   * borders on positioned cells. That is why Core draws the actions column's
+   * divider this way too.
+   */
+  .posts-table.has-sticky-column.is-stuck .dataviews-view-table :is(td, th).dataviews-view-table__checkbox-column + :is(td, th)::after,
+  .posts-table.has-sticky-column.is-stuck .dataviews-view-table :is(td, th):first-child:not(.dataviews-view-table__checkbox-column, .dataviews-view-table__group-header-cell)::after {
+    display: block;
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 1px;
+    background-color: var(--wpds-color-stroke-surface-neutral-weak, #f0f0f0);
+  }
+}

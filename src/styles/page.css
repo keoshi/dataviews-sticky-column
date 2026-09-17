@@ -1,0 +1,114 @@
+/*
+ * The page around the demo.
+ *
+ * Deliberately plain. Everything here is chrome for one table, and a page that
+ * competes with the thing it is showing makes the reviewer's job harder. Colour,
+ * spacing and type come from `@wordpress/theme` so the surroundings agree with
+ * the component under discussion rather than approximating it.
+ */
+
+body {
+  margin: 0;
+  background-color: var(--wpds-color-background-surface-neutral);
+  color: var(--wpds-color-foreground-content-neutral);
+  font-family: var(--wpds-typography-font-family-body);
+  font-size: var(--wpds-typography-font-size-md);
+  line-height: var(--wpds-typography-line-height-md);
+}
+
+.page {
+  max-inline-size: 1232px;
+  margin: 0 auto;
+  padding: var(--wpds-dimension-padding-3xl) var(--wpds-dimension-padding-2xl) 96px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--wpds-dimension-gap-2xl);
+}
+
+.page-header h1 {
+  font-family: var(--wpds-typography-font-family-heading);
+  font-size: var(--wpds-typography-font-size-2xl);
+  line-height: var(--wpds-typography-line-height-2xl);
+  font-weight: var(--wpds-typography-font-weight-emphasis);
+  margin: 0 0 var(--wpds-dimension-gap-sm);
+}
+
+.page-header p,
+.page-note p {
+  margin: 0 0 var(--wpds-dimension-gap-sm);
+  max-inline-size: 68ch;
+}
+
+.page-header p:last-child,
+.page-note p:last-child {
+  margin-bottom: 0;
+}
+
+.muted {
+  color: var(--wpds-color-foreground-content-neutral-weak);
+}
+
+/* A card, on the same terms DataViews' own surface uses. */
+.panel {
+  background-color: var(--wpds-color-background-surface-neutral-strong);
+  border: 1px solid var(--wpds-color-stroke-surface-neutral-weak);
+  border-radius: var(--wpds-border-radius-lg);
+  padding: var(--wpds-dimension-padding-xl);
+}
+
+/*
+ * The switches, side by side and in view.
+ *
+ * This prototype is evidence attached to an issue, read by people who have
+ * never opened one of ours. A control they have to go looking for is a control
+ * they do not touch, so nothing here hides in a corner.
+ */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--wpds-dimension-gap-2xl);
+}
+
+.controls > * {
+  flex: 1 1 220px;
+  min-inline-size: 0;
+}
+
+/*
+ * The table in a box of a stated width, so the behaviour at four widths can be
+ * seen without resizing a window.
+ *
+ * The frame is what the container query measures, which is the whole point: the
+ * table inside a 390px frame behaves the way it would on a 390px phone, from
+ * the same stylesheet, with nothing simulated but the room.
+ */
+.frame {
+  max-inline-size: 100%;
+  transition: inline-size var(--wpds-motion-duration-medium, 160ms) var(--wpds-motion-easing-ease-out, ease-out);
+}
+
+.posts-table {
+  background-color: var(--wpds-color-background-surface-neutral-strong);
+  border: 1px solid var(--wpds-color-stroke-surface-neutral-weak);
+  border-radius: var(--wpds-border-radius-lg);
+  overflow: hidden;
+}
+
+/* A post title is the name of the row, and carries the weight that goes with
+   being the thing every other cell is about. It wraps, the way wp-admin's does:
+   a title held on one line sets the width of the column that is trying to prove
+   it does not need much. */
+.post-title {
+  font-weight: var(--wpds-typography-font-weight-emphasis);
+}
+
+.page-footer {
+  border-top: 1px solid var(--wpds-color-stroke-surface-neutral-weak);
+  padding-top: var(--wpds-dimension-padding-xl);
+  font-size: var(--wpds-typography-font-size-sm);
+  color: var(--wpds-color-foreground-content-neutral-weak);
+}
+
+.page-footer a {
+  color: var(--wpds-color-foreground-interactive-brand);
+}

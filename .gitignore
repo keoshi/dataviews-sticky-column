@@ -1,0 +1,5 @@
+node_modules/
+dist/
+
+# Spacefast CLI state and the ignore file it writes beside the published build.
+.spacefast/

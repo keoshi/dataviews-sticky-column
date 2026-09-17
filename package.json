@@ -1,0 +1,27 @@
+{
+  "name": "dataviews-sticky-column",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A demo for a DataViews proposal: let a table pin its first column the way it already pins its actions column.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4319"
+  },
+  "dependencies": {
+    "@wordpress/components": "40.0.0",
+    "@wordpress/dataviews": "18.1.0",
+    "@wordpress/icons": "15.5.0",
+    "@wordpress/theme": "2.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.1.1",
+    "vite": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
