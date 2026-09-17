@@ -7,3 +7,6 @@ dist/
 /.spacefast-*
 .spacefast/.spacefast-*
 .spacefast/.space-link-*.tmp
+
+# The Gutenberg issue draft, held until the cc handles are decided. Not published.
+issue-draft.md
