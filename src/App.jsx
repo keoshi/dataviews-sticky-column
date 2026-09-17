@@ -159,7 +159,7 @@ function EmbeddedTable() {
 
 function Demo() {
   const [sticky, setSticky] = useState(true);
-  const [width, setWidth] = useState('782');
+  const [width, setWidth] = useState('full');
   const [mode, setMode] = useState('actions');
 
   const frame = WIDTHS.find((option) => option.value === width) ?? WIDTHS[0];
